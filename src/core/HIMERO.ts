@@ -63,7 +63,12 @@ export class HIMERO {
         installNodeIntegration(HIMERO)
       }).catch(() => { /* non-critical */ })
     }
-    // React Native: no auto-integration; use HIMERO.captureError() + himero/react ErrorBoundary
+    // React Native: install RN-specific integration (ErrorUtils + console instrumentation)
+    if (isReactNative) {
+      import('../integrations/reactnative').then(({ installReactNativeIntegration }) => {
+        installReactNativeIntegration(HIMERO)
+      }).catch(() => { /* non-critical */ })
+    }
 
     // 연결 핑 — 대시보드에 SDK 연결 상태를 즉시 표시하기 위해
     // fire-and-forget, 실패해도 SDK 동작에 영향 없음
