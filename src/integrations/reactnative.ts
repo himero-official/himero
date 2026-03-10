@@ -1,8 +1,8 @@
 import type { HIMERO as HIMEROClass } from '../core/HIMERO'
+import { installConsoleInstrumentation } from './console'
 
 type HIMEROStatic = typeof HIMEROClass
 
-let _himero: HIMEROStatic | null = null
 let _installed = false
 
 /**
@@ -16,10 +16,9 @@ let _installed = false
 export function installReactNativeIntegration(himero: HIMEROStatic): void {
   if (_installed) return
   _installed = true
-  _himero    = himero
 
-  instrumentErrorUtils()
-  instrumentConsole()
+  instrumentErrorUtils(himero)
+  installConsoleInstrumentation(himero)
 }
 
 // ---------------------------------------------------------------------------
@@ -27,7 +26,7 @@ export function installReactNativeIntegration(himero: HIMEROStatic): void {
 // Catches all unhandled JS errors, including fatal ones that crash the app
 // ---------------------------------------------------------------------------
 
-function instrumentErrorUtils(): void {
+function instrumentErrorUtils(himero: HIMEROStatic): void {
   const g = globalThis as unknown as Record<string, unknown>
   const ErrorUtils = g.ErrorUtils as
     | {
@@ -44,78 +43,11 @@ function instrumentErrorUtils(): void {
       : null
 
   ErrorUtils.setGlobalHandler((error: Error, isFatal = false) => {
-    _capturing = true
-    try {
-      _himero?.captureError(error, {
-        level: isFatal ? 'critical' : 'warning',
-        extra: { isFatal, source: 'ReactNative.ErrorUtils' },
-      })
-    } finally {
-      _capturing = false
-    }
+    himero.captureError(error, {
+      level: isFatal ? 'critical' : 'warning',
+      extra: { isFatal, source: 'ReactNative.ErrorUtils' },
+    })
 
     if (typeof prevHandler === 'function') prevHandler(error, isFatal)
   })
-}
-
-// ---------------------------------------------------------------------------
-// console.error / console.warn instrumentation
-// console.error → sent as an error (appears in dashboard error feed)
-// console.warn  → sent as a warning (appears in dashboard)
-//
-// _capturing flag prevents re-entrance (HIMERO itself may call console.warn
-// before initialization, etc.)
-// ---------------------------------------------------------------------------
-
-let _capturing = false
-
-function instrumentConsole(): void {
-  const origError = console.error.bind(console)
-  const origWarn  = console.warn.bind(console)
-
-  console.error = function (...args: unknown[]) {
-    if (!_capturing) {
-      _capturing = true
-      try {
-        const err =
-          args[0] instanceof Error
-            ? args[0]
-            : (() => {
-                const msg = args
-                  .map((a) =>
-                    typeof a === 'string'
-                      ? a
-                      : a instanceof Error
-                      ? a.message
-                      : JSON.stringify(a),
-                  )
-                  .join(' ')
-                  .slice(0, 400)
-                const e  = new Error(msg)
-                e.name   = 'ConsoleError'
-                return e
-              })()
-        _himero?.captureError(err)
-      } finally {
-        _capturing = false
-      }
-    }
-    return origError(...args)
-  }
-
-  console.warn = function (...args: unknown[]) {
-    if (!_capturing) {
-      _capturing = true
-      try {
-        const message = args
-          .map((a) => (typeof a === 'string' ? a : JSON.stringify(a)))
-          .join(' ')
-          .slice(0, 300)
-        _himero?.captureMessage(message, 'warning')
-      } finally {
-        _capturing = false
-      }
-    }
-    return origWarn(...args)
-  }
 }

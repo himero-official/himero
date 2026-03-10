@@ -1,4 +1,5 @@
 import type { HIMERO as HIMEROClass } from '../core/HIMERO'
+import { installConsoleInstrumentation } from './console'
 
 type HIMEROStatic = typeof HIMEROClass
 
@@ -47,15 +48,14 @@ export function installNodeIntegration(himero: HIMEROStatic): void {
     himero.captureError(error)
   })
 
+  // process.warning → captureMessage (Node.js deprecation / performance warnings)
   process.on('warning', (warning: Error) => {
-    himero._addBreadcrumb({
-      type:      'log',
-      timestamp: Date.now(),
-      data: {
-        level:   'warning',
-        message: warning.message.slice(0, 200),
-        name:    warning.name,
-      },
-    })
+    himero.captureMessage(
+      `[${warning.name}] ${warning.message}`.slice(0, 300),
+      'warning',
+    )
   })
+
+  // console.error / console.warn → dashboard entries
+  installConsoleInstrumentation(himero)
 }

@@ -1,6 +1,6 @@
 {
   "name": "himero",
-  "version": "1.0.8",
+  "version": "1.0.9",
   "license": "SEE LICENSE IN LICENSE",
   "description": "Zero-config error tracking and AI-powered diagnosis for JavaScript applications — Next.js, React, Node.js, Express, NestJS",
   "main": "./dist/index.js",

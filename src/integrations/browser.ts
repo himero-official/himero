@@ -1,4 +1,5 @@
 import type { HIMERO as HIMEROClass } from '../core/HIMERO'
+import { installConsoleInstrumentation } from './console'
 
 type HIMEROStatic = typeof HIMEROClass
 
@@ -28,7 +29,7 @@ export function installBrowserIntegration(himero: HIMEROStatic): void {
   instrumentUnhandledRejection()
   instrumentFetch()
   instrumentXHR()
-  instrumentConsole()
+  installConsoleInstrumentation(himero)
   instrumentNavigation()
   instrumentClicks()
 }
@@ -182,39 +183,6 @@ function instrumentXHR(): void {
     })
 
     return origSend.call(this, ...args)
-  }
-}
-
-// ---------------------------------------------------------------------------
-// console.error / console.warn
-// ---------------------------------------------------------------------------
-
-function instrumentConsole(): void {
-  const levels = ['error', 'warn'] as const
-
-  for (const level of levels) {
-    const orig = console[level].bind(console)
-
-    console[level] = function (...args: unknown[]) {
-      _himero?._addBreadcrumb({
-        type:      'log',
-        timestamp: Date.now(),
-        data: {
-          level,
-          message: args
-            .map((a) =>
-              typeof a === 'string'
-                ? a
-                : a instanceof Error
-                ? a.message
-                : JSON.stringify(a),
-            )
-            .join(' ')
-            .slice(0, 200),
-        },
-      })
-      return orig(...args)
-    }
   }
 }
 
