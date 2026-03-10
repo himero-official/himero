@@ -1,0 +1,55 @@
+HIMERO SDK License
+Copyright (c) 2026 HIMERO. All rights reserved.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+1. GRANT OF USE
+
+   Permission is hereby granted, free of charge, to any individual or
+   organization ("User") to install and use this Software solely for the
+   purpose of connecting applications to the HIMERO error tracking service
+   (https://himero.app), including use within commercial applications.
+
+2. RESTRICTIONS
+
+   The User may NOT, without prior written permission from HIMERO:
+
+   a. Redistribute, sublicense, resell, or transfer the Software or any
+      substantial portion of it to any third party as a standalone product
+      or library.
+
+   b. Use the Software to build, operate, or offer any competing error
+      tracking, monitoring, or observability product or service.
+
+   c. Modify and redistribute the Software under a different name or as
+      part of another SDK or library.
+
+   d. Remove, alter, or obscure any copyright, trademark, or proprietary
+      notices contained in the Software.
+
+3. OWNERSHIP
+
+   HIMERO retains all right, title, and interest in and to the Software,
+   including all intellectual property rights therein. This license does
+   not grant the User any ownership rights.
+
+4. DISCLAIMER OF WARRANTIES
+
+   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+   OR IMPLIED, INCLUDING BUT NOT LIMITED TO WARRANTIES OF MERCHANTABILITY,
+   FITNESS FOR A PARTICULAR PURPOSE, AND NON-INFRINGEMENT. IN NO EVENT SHALL
+   HIMERO BE LIABLE FOR ANY CLAIM, DAMAGES, OR OTHER LIABILITY ARISING FROM,
+   OUT OF, OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR INABILITY TO
+   USE THE SOFTWARE.
+
+5. TERMINATION
+
+   This license terminates automatically if the User fails to comply with
+   any of its terms. Upon termination, the User must cease all use of the
+   Software and destroy all copies in their possession.
+
+6. CONTACT
+
+   For licensing inquiries or permissions beyond the scope of this license:
+   forestnwater@gmail.com
+   https://himero.app
