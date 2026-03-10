@@ -3,6 +3,7 @@ import type { CaptureContext, HIMEROUser, Breadcrumb, BreadcrumbType } from './t
 import { resolveConfig } from './config'
 import { BreadcrumbBuffer } from './breadcrumbs'
 import { captureError as _captureError } from './capture'
+import { installConsoleInstrumentation } from '../integrations/console'
 
 /**
  * HIMERO — main SDK singleton.
@@ -63,8 +64,11 @@ export class HIMERO {
         installNodeIntegration(HIMERO)
       }).catch(() => { /* non-critical */ })
     }
-    // React Native: install RN-specific integration (ErrorUtils + console instrumentation)
+    // React Native: patch console synchronously (before first render) so early
+    // warnings (e.g. expo-router "[Layout children]") are captured immediately.
+    // ErrorUtils (fatal crash handler) is patched async — crashes always happen later.
     if (isReactNative) {
+      installConsoleInstrumentation(HIMERO)
       import('../integrations/reactnative').then(({ installReactNativeIntegration }) => {
         installReactNativeIntegration(HIMERO)
       }).catch(() => { /* non-critical */ })
