@@ -30,12 +30,15 @@ export function installConsoleInstrumentation(himero: HIMEROStatic): boolean {
 
   // ── console.error → captureError ────────────────────────────
   console.error = function (...args: unknown[]) {
-    if (!_capturing) {
+    const firstArg = args[0]
+    const isInternal =
+      typeof firstArg === 'string' && firstArg.startsWith('[HIMERO]')
+    if (!_capturing && !isInternal) {
       _capturing = true
       try {
         const err =
-          args[0] instanceof Error
-            ? args[0]
+          firstArg instanceof Error
+            ? firstArg
             : (() => {
                 const msg = args
                   .map((a) =>
@@ -61,7 +64,10 @@ export function installConsoleInstrumentation(himero: HIMEROStatic): boolean {
 
   // ── console.warn → captureMessage('warning') ─────────────────
   console.warn = function (...args: unknown[]) {
-    if (!_capturing) {
+    const firstArg = args[0]
+    const isInternal =
+      typeof firstArg === 'string' && firstArg.startsWith('[HIMERO]')
+    if (!_capturing && !isInternal) {
       _capturing = true
       try {
         const message = args
